@@ -1,0 +1,31 @@
+# Core HelloAgents framework dependency
+# Note: this repository does not vendor the hello_agents source itself.
+hello-agents[protocols]>=0.2.4,<=0.2.9
+
+# FastAPI and application dependencies
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# HTTP clients
+httpx>=0.27.0
+aiohttp>=3.10.0
+requests>=2.32.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Form and CORS-related support
+python-multipart>=0.0.9
+
+# Logging
+loguru>=0.7.0
+
+# MCP-related tools
+fastmcp>=2.0.0
+uv>=0.8.0
+
+# Utilities
+python-dateutil>=2.8.2
+huggingface_hub>=0.25.0
