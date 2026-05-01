@@ -1,6 +1,5 @@
-﻿"""鏃呰瑙勫垝API璺敱"""
+"""旅行规划API路由"""
 
-import logging
 from fastapi import APIRouter, HTTPException
 from ...models.schemas import (
     TripRequest,
@@ -9,69 +8,68 @@ from ...models.schemas import (
 )
 from ...agents.trip_planner_agent import get_trip_planner_agent
 
-logger = logging.getLogger(__name__)
-
-router = APIRouter(prefix="/trip", tags=["鏃呰瑙勫垝"])
+router = APIRouter(prefix="/trip", tags=["旅行规划"])
 
 
 @router.post(
     "/plan",
     response_model=TripPlanResponse,
-    summary="鐢熸垚鏃呰璁″垝",
-    description="鏍规嵁鐢ㄦ埛杈撳叆鐨勬梾琛岄渶姹?鐢熸垚璇︾粏鐨勬梾琛岃鍒?
+    summary="生成旅行计划",
+    description="根据用户输入的旅行需求,生成详细的旅行计划"
 )
 async def plan_trip(request: TripRequest):
     """
-    鐢熸垚鏃呰璁″垝
+    生成旅行计划
 
     Args:
-        request: 鏃呰璇锋眰鍙傛暟
+        request: 旅行请求参数
 
     Returns:
-        鏃呰璁″垝鍝嶅簲
+        旅行计划响应
     """
     try:
         print(f"\n{'='*60}")
-        print(f"馃摜 鏀跺埌鏃呰瑙勫垝璇锋眰:")
-        print(f"   鍩庡競: {request.city}")
-        print(f"   鏃ユ湡: {request.start_date} - {request.end_date}")
-        print(f"   澶╂暟: {request.travel_days}")
+        print(f"📥 收到旅行规划请求:")
+        print(f"   城市: {request.city}")
+        print(f"   日期: {request.start_date} - {request.end_date}")
+        print(f"   天数: {request.travel_days}")
         print(f"{'='*60}\n")
 
-        # 鑾峰彇Agent瀹炰緥
-        print("馃攧 鑾峰彇澶氭櫤鑳戒綋绯荤粺瀹炰緥...")
+        # 获取Agent实例
+        print("🔄 获取多智能体系统实例...")
         agent = get_trip_planner_agent()
 
-        # 鐢熸垚鏃呰璁″垝
-        print("馃殌 寮€濮嬬敓鎴愭梾琛岃鍒?..")
+        # 生成旅行计划
+        print("🚀 开始生成旅行计划...")
         trip_plan = agent.plan_trip(request)
 
-        print("鉁?鏃呰璁″垝鐢熸垚鎴愬姛,鍑嗗杩斿洖鍝嶅簲\n")
+        print("✅ 旅行计划生成成功,准备返回响应\n")
 
         return TripPlanResponse(
             success=True,
-            message="鏃呰璁″垝鐢熸垚鎴愬姛",
+            message="旅行计划生成成功",
             data=trip_plan
         )
 
     except Exception as e:
-        print(f"鉂?鐢熸垚鏃呰璁″垝澶辫触: {str(e)}")
-        logger.exception("Failed to handle /trip/plan request")
+        print(f"❌ 生成旅行计划失败: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
-            detail=f"鐢熸垚鏃呰璁″垝澶辫触: {str(e)}"
+            detail=f"生成旅行计划失败: {str(e)}"
         )
 
 
 @router.get(
     "/health",
-    summary="鍋ュ悍妫€鏌?,
-    description="妫€鏌ユ梾琛岃鍒掓湇鍔℃槸鍚︽甯?
+    summary="健康检查",
+    description="检查旅行规划服务是否正常"
 )
 async def health_check():
-    """鍋ュ悍妫€鏌?""
+    """健康检查"""
     try:
-        # 妫€鏌gent鏄惁鍙敤
+        # 检查Agent是否可用
         agent = get_trip_planner_agent()
         
         return {
@@ -83,6 +81,6 @@ async def health_check():
     except Exception as e:
         raise HTTPException(
             status_code=503,
-            detail=f"鏈嶅姟涓嶅彲鐢? {str(e)}"
+            detail=f"服务不可用: {str(e)}"
         )
 
