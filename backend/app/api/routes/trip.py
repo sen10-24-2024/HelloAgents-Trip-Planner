@@ -1,12 +1,13 @@
 """旅行规划API路由"""
 
+import logging
+
 from fastapi import APIRouter, HTTPException
-from ...models.schemas import (
-    TripRequest,
-    TripPlanResponse,
-    ErrorResponse
-)
+
 from ...agents.trip_planner_agent import get_trip_planner_agent
+from ...models.schemas import TripPlanResponse, TripRequest
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/trip", tags=["旅行规划"])
 
@@ -29,32 +30,31 @@ async def plan_trip(request: TripRequest):
     """
     try:
         print(f"\n{'='*60}")
-        print(f"📥 收到旅行规划请求:")
+        print("📥 收到旅行规划请求:")
         print(f"   城市: {request.city}")
         print(f"   日期: {request.start_date} - {request.end_date}")
         print(f"   天数: {request.travel_days}")
         print(f"{'='*60}\n")
 
-        # 获取Agent实例
         print("🔄 获取多智能体系统实例...")
         agent = get_trip_planner_agent()
 
-        # 生成旅行计划
         print("🚀 开始生成旅行计划...")
-        trip_plan = agent.plan_trip(request)
+        result = agent.plan_trip(request)
 
-        print("✅ 旅行计划生成成功,准备返回响应\n")
+        if result["success"]:
+            print("✅ 旅行计划生成成功,准备返回响应\n")
+        else:
+            print(f"⚠️  旅行计划生成未完成,返回备用计划: {result['message']}\n")
 
         return TripPlanResponse(
-            success=True,
-            message="旅行计划生成成功",
-            data=trip_plan
+            success=result["success"],
+            message=result["message"],
+            data=result["data"],
         )
 
     except Exception as e:
-        print(f"❌ 生成旅行计划失败: {str(e)}")
-        import traceback
-        traceback.print_exc()
+        logger.exception("生成旅行计划失败")
         raise HTTPException(
             status_code=500,
             detail=f"生成旅行计划失败: {str(e)}"
@@ -69,18 +69,33 @@ async def plan_trip(request: TripRequest):
 async def health_check():
     """健康检查"""
     try:
-        # 检查Agent是否可用
         agent = get_trip_planner_agent()
-        
+
         return {
             "status": "healthy",
             "service": "trip-planner",
-            "agent_name": agent.agent.name,
-            "tools_count": len(agent.agent.list_tools())
+            "agents": {
+                "attraction": {
+                    "name": agent.attraction_agent.name,
+                    "tools_count": len(agent.attraction_agent.list_tools())
+                },
+                "weather": {
+                    "name": agent.weather_agent.name,
+                    "tools_count": len(agent.weather_agent.list_tools())
+                },
+                "hotel": {
+                    "name": agent.hotel_agent.name,
+                    "tools_count": len(agent.hotel_agent.list_tools())
+                },
+                "planner": {
+                    "name": agent.planner_agent.name,
+                    "tools_count": len(agent.planner_agent.list_tools())
+                }
+            }
         }
     except Exception as e:
+        logger.exception("旅行规划服务健康检查失败")
         raise HTTPException(
             status_code=503,
             detail=f"服务不可用: {str(e)}"
         )
-

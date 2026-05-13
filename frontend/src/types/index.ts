@@ -45,6 +45,17 @@ export interface Budget {
   total: number
 }
 
+export interface GenerationMeta {
+  source: 'planner' | 'fallback'
+  status_message: string
+}
+
+export interface SearchContext {
+  attractions_raw?: string
+  weather_raw?: string
+  hotels_raw?: string
+}
+
 export interface DayPlan {
   date: string
   day_index: number
@@ -74,6 +85,8 @@ export interface TripPlan {
   weather_info: WeatherInfo[]
   overall_suggestions: string
   budget?: Budget
+  generation_meta?: GenerationMeta
+  search_context?: SearchContext
 }
 
 export interface TripFormData {

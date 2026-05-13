@@ -289,18 +289,22 @@ const handleSubmit = async () => {
     loadingProgress.value = 100
     loadingStatus.value = '✅ 完成!'
 
-    if (response.success && response.data) {
-      // 保存到sessionStorage
+    if (response.data) {
+      // 淇濆瓨鍒皊essionStorage
       sessionStorage.setItem('tripPlan', JSON.stringify(response.data))
 
-      message.success('旅行计划生成成功!')
+      if (response.success) {
+        message.success('鏃呰璁″垝鐢熸垚鎴愬姛!')
+      } else {
+        message.warning(response.message || '琛岀▼鏈畬鍏ㄧ敓鎴?宸叉樉绀哄鐢ㄨ绋?')
+      }
 
-      // 短暂延迟后跳转
+      // 鐭殏寤惰繜鍚庤烦杞?
       setTimeout(() => {
         router.push('/result')
       }, 500)
     } else {
-      message.error(response.message || '生成失败')
+      message.error(response.message || '鐢熸垚澶辫触')
     }
   } catch (error: any) {
     clearInterval(progressInterval)

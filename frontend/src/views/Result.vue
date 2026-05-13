@@ -63,6 +63,39 @@
 
       <!-- 主内容区 -->
       <div class="main-content">
+        <a-alert
+          v-if="tripPlan.generation_meta?.source === 'fallback'"
+          type="warning"
+          show-icon
+          :message="tripPlan.generation_meta?.status_message || '当前展示的是备用行程'"
+          style="margin-bottom: 16px"
+        />
+
+        <a-card
+          v-if="tripPlan.search_context?.attractions_raw || tripPlan.search_context?.weather_raw || tripPlan.search_context?.hotels_raw"
+          title="真实搜索结果"
+          :bordered="false"
+          style="margin-bottom: 20px"
+        >
+          <a-row :gutter="16">
+            <a-col :span="8" v-if="tripPlan.search_context?.attractions_raw">
+              <a-card size="small" title="景点搜索结果">
+                <pre style="white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow: auto; margin: 0">{{ tripPlan.search_context?.attractions_raw }}</pre>
+              </a-card>
+            </a-col>
+            <a-col :span="8" v-if="tripPlan.search_context?.weather_raw">
+              <a-card size="small" title="天气查询结果">
+                <pre style="white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow: auto; margin: 0">{{ tripPlan.search_context?.weather_raw }}</pre>
+              </a-card>
+            </a-col>
+            <a-col :span="8" v-if="tripPlan.search_context?.hotels_raw">
+              <a-card size="small" title="酒店搜索结果">
+                <pre style="white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow: auto; margin: 0">{{ tripPlan.search_context?.hotels_raw }}</pre>
+              </a-card>
+            </a-col>
+          </a-row>
+        </a-card>
+
         <!-- 顶部信息区:左侧概览+预算,右侧地图 -->
         <div class="top-info-section">
           <!-- 左侧:行程概览和预算明细 -->

@@ -139,6 +139,19 @@ class Budget(BaseModel):
     total: int = Field(default=0, description="总费用")
 
 
+class GenerationMeta(BaseModel):
+    """琛岀▼鐢熸垚鍏冧俊鎭?"""
+    source: str = Field(default="planner", description="planner/fallback")
+    status_message: str = Field(default="", description="鐢熸垚鐘舵€佽鏄?")
+
+
+class SearchContext(BaseModel):
+    """涓婃父鐪熷疄鎼滅储缁撴灉"""
+    attractions_raw: str = Field(default="", description="鏅偣鎼滅储鍘熷缁撴灉")
+    weather_raw: str = Field(default="", description="澶╂皵鏌ヨ鍘熷缁撴灉")
+    hotels_raw: str = Field(default="", description="閰掑簵鎼滅储鍘熷缁撴灉")
+
+
 class TripPlan(BaseModel):
     """旅行计划"""
     city: str = Field(..., description="目的地城市")
